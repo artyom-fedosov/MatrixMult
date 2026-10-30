@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: GCC ${{ matrix.preset }}
+    runs-on: ubuntu-latest
+    # `import std;` needs GCC 15+ and CMake 4.x; Fedora 44 ships both.
+    container: fedora:44
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [gcc-release, gcc-debug]
+    steps:
+      - name: Install toolchain
+        run: dnf install -y --setopt=install_weak_deps=False gcc-c++ libgomp cmake ninja-build git
+
+      - uses: actions/checkout@v4
+
+      - name: Toolchain versions
+        run: |
+          g++ --version | head -n1
+          cmake --version | head -n1
+          ninja --version
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }} -DMATMUL_NATIVE=OFF
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }}
+
+      - name: Benchmark smoke run
+        run: ./build/${{ matrix.preset }}/matmul --size 256 --reps 1

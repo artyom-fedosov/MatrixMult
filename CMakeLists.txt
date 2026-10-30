@@ -2,8 +2,11 @@ cmake_minimum_required(VERSION 4.0)
 
 # `import std;` is still behind an experimental gate in CMake. The UUID is tied
 # to the CMake release; if configuring fails, look it up in
-# Help/dev/experimental.rst of your CMake version.
-set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
+# Help/dev/experimental.rst of your CMake version and pass it with
+# -DCMAKE_EXPERIMENTAL_CXX_IMPORT_STD=<uuid>.
+if(NOT DEFINED CMAKE_EXPERIMENTAL_CXX_IMPORT_STD)
+    set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
+endif()
 
 project(MatrixMult
     VERSION 1.0.0
