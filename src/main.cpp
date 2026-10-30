@@ -153,7 +153,7 @@ int run(const Options& opt)
                  opt.m, opt.n, opt.m, opt.k, opt.k, opt.n, omp_get_max_threads(), opt.reps, tolerance);
 
     matmul::Mat reference{opt.m, opt.n};
-    const double serial_time = matmul::best_of(1, [&] { matmul::multiply_serial(a, b, reference); });
+    const double serial_time = matmul::best_of(opt.reps, [&] { matmul::multiply_serial(a, b, reference); });
 
     std::println("{:<20} {:>10} {:>10} {:>9} {:>11}  {}", "kernel", "time [s]", "GFLOP/s", "speedup", "max error", "status");
     bool all_ok = true;
