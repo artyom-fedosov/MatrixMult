@@ -45,6 +45,8 @@ target_sources(matmul_core
             src/kernels/serial.cppm
             src/kernels/parallel_for.cppm
             src/kernels/collapse_schedule.cppm
+            src/kernels/simd.cppm
+            src/kernels/tiled.cppm
 )
 target_link_libraries(matmul_core PUBLIC OpenMP::OpenMP_CXX)
 target_compile_options(matmul_core PRIVATE -Wall -Wextra -Wpedantic)

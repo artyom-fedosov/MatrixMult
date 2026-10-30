@@ -7,6 +7,8 @@ import :matrix;
 import :serial;
 import :parallel_for;
 import :collapse_schedule;
+import :simd;
+import :tiled;
 
 namespace matmul {
 
@@ -28,6 +30,9 @@ export inline constexpr std::array kernels{
     Kernel{"collapse-guided", &multiply_collapse_guided, "collapse(2), schedule(guided,16)"},
     Kernel{"schedule-runtime", &multiply_schedule_runtime, "schedule(runtime) driven by OMP_SCHEDULE"},
     Kernel{"schedule-api", &multiply_schedule_api, "omp_get_schedule/omp_set_schedule + schedule(runtime)"},
+    Kernel{"simd-ikj", &multiply_simd_ikj, "simd, declare simd (uniform/linear/notinbranch), if(simd:)"},
+    Kernel{"simd-dot", &multiply_simd_dot, "simd reduction(+:sum), simdlen"},
+    Kernel{"tiled", &multiply_tiled, "cache blocking, for nowait, barrier, collapse over tiles"},
 };
 
 export [[nodiscard]] const Kernel* find_kernel(std::string_view name) noexcept

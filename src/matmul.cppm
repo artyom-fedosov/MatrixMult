@@ -10,3 +10,5 @@ export import :kernels;
 export import :serial;
 export import :parallel_for;
 export import :collapse_schedule;
+export import :simd;
+export import :tiled;
