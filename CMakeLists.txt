@@ -51,6 +51,8 @@ target_sources(matmul_core
             src/kernels/tasks_recursive.cppm
             src/kernels/taskloop.cppm
             src/kernels/task_depend.cppm
+            src/kernels/nested.cppm
+            src/kernels/offload.cppm
 )
 target_link_libraries(matmul_core PUBLIC OpenMP::OpenMP_CXX)
 target_compile_options(matmul_core PRIVATE -Wall -Wextra -Wpedantic)

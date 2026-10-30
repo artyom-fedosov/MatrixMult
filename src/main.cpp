@@ -139,6 +139,7 @@ int run(const Options& opt)
     }
     if (opt.info) {
         matmul::print_runtime_info();
+        std::println("target regions run on         : {}", matmul::target_runs_on_host() ? "host (fallback)" : "device");
         matmul::run_runtime_demos();
         return 0;
     }

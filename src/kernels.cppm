@@ -13,6 +13,8 @@ import :manual_spmd;
 import :tasks_recursive;
 import :taskloop;
 import :task_depend;
+import :nested;
+import :offload;
 
 namespace matmul {
 
@@ -42,6 +44,10 @@ export inline constexpr std::array kernels{
     Kernel{"taskloop-grainsize", &multiply_taskloop_grainsize, "single + taskloop grainsize"},
     Kernel{"taskloop-numtasks", &multiply_taskloop_numtasks, "masked + taskloop simd, taskloop num_tasks nogroup + taskwait"},
     Kernel{"task-depend", &multiply_task_depend, "task graph with depend(in/out/inout), priority"},
+    Kernel{"nested", &multiply_nested, "nested parallel, num_threads, proc_bind(spread/close), max active levels"},
+    Kernel{"target", &multiply_target, "target teams distribute parallel for, map, declare target"},
+    Kernel{"target-data", &multiply_target_data, "target data, target update, target teams distribute parallel for (simd)"},
+    Kernel{"teams-host", &multiply_teams_host, "host teams, num_teams, thread_limit, distribute parallel for"},
 };
 
 export [[nodiscard]] const Kernel* find_kernel(std::string_view name) noexcept

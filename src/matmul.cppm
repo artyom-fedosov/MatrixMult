@@ -16,3 +16,5 @@ export import :manual_spmd;
 export import :tasks_recursive;
 export import :taskloop;
 export import :task_depend;
+export import :nested;
+export import :offload;
