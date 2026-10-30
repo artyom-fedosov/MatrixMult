@@ -8,3 +8,5 @@ export import :verify;
 export import :runtime;
 export import :kernels;
 export import :serial;
+export import :parallel_for;
+export import :collapse_schedule;
