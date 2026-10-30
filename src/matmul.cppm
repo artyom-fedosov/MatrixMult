@@ -12,3 +12,7 @@ export import :parallel_for;
 export import :collapse_schedule;
 export import :simd;
 export import :tiled;
+export import :manual_spmd;
+export import :tasks_recursive;
+export import :taskloop;
+export import :task_depend;

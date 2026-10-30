@@ -9,6 +9,10 @@ import :parallel_for;
 import :collapse_schedule;
 import :simd;
 import :tiled;
+import :manual_spmd;
+import :tasks_recursive;
+import :taskloop;
+import :task_depend;
 
 namespace matmul {
 
@@ -33,6 +37,11 @@ export inline constexpr std::array kernels{
     Kernel{"simd-ikj", &multiply_simd_ikj, "simd, declare simd (uniform/linear/notinbranch), if(simd:)"},
     Kernel{"simd-dot", &multiply_simd_dot, "simd reduction(+:sum), simdlen"},
     Kernel{"tiled", &multiply_tiled, "cache blocking, for nowait, barrier, collapse over tiles"},
+    Kernel{"manual-spmd", &multiply_manual_spmd, "bare parallel, thread ids, atomic, critical, omp_lock_t (RAII), masked"},
+    Kernel{"tasks-recursive", &multiply_tasks_recursive, "task, taskwait, taskgroup, if/final/mergeable, omp_in_final"},
+    Kernel{"taskloop-grainsize", &multiply_taskloop_grainsize, "single + taskloop grainsize"},
+    Kernel{"taskloop-numtasks", &multiply_taskloop_numtasks, "masked + taskloop simd, taskloop num_tasks nogroup + taskwait"},
+    Kernel{"task-depend", &multiply_task_depend, "task graph with depend(in/out/inout), priority"},
 };
 
 export [[nodiscard]] const Kernel* find_kernel(std::string_view name) noexcept

@@ -12,7 +12,7 @@
 //                                 `linear` = increases with the lane index,
 //                                 `notinbranch` = never called conditionally.
 //   * `parallel for simd` is the combined form; it is used in
-//     Matrix::fill_parallel (matrix.cppm). It is a poor fit for the
+//     fill_parallel (matrix.cppm). It is a poor fit for the
 //     multiplication itself: applied to a collapsed (i, j) space the lanes need
 //     div/mod index decoding and gathers, and runs ~10x slower than simd-ikj.
 //   * `simdlen`, `if(simd: ...)` — preferred vector length; vectorise only when

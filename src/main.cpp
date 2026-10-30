@@ -17,6 +17,7 @@ struct Options {
     std::vector<std::string_view> kernel_names;
     bool list = false;
     bool info = false;
+    bool verbose = false;
 };
 
 void print_usage(std::string_view prog)
@@ -30,6 +31,7 @@ void print_usage(std::string_view prog)
                  "  --seed S            input seed (default 42)\n"
                  "  --list              list kernels and the OpenMP concepts they show\n"
                  "  --info              print OpenMP runtime information and demos\n"
+                 "  --verbose           per-thread statistics for kernels that record them\n"
                  "  --help              show this text",
                  prog);
 }
@@ -81,11 +83,22 @@ template <typename T>
             opt.list = true;
         } else if (flag == "--info") {
             opt.info = true;
+        } else if (flag == "--verbose" || flag == "-v") {
+            opt.verbose = true;
         } else {
             throw std::invalid_argument{std::format("unknown option '{}'", flag)};
         }
     }
     return opt;
+}
+
+void print_spmd_stats()
+{
+    const auto& stats = matmul::spmd_last_stats();
+    for (const auto& t : stats.threads) {
+        std::println("    thread {:>2}: rows [{}, {}) in {:.4f} s", t.thread, t.first_row, t.first_row + t.rows, t.seconds);
+    }
+    std::println("    team {}, rows {}, slowest thread {:.4f} s", stats.team_size, stats.rows_done, stats.slowest_thread);
 }
 
 void list_kernels()
@@ -159,6 +172,9 @@ int run(const Options& opt)
         std::println("{:<20} {:>10.4f} {:>10.2f} {:>8.2f}x {:>11.2e}  {}",
                      kernel->name, seconds, flops / seconds * 1e-9, serial_time / seconds,
                      report.max_abs_error, ok ? "ok" : "MISMATCH");
+        if (opt.verbose && kernel->fn == &matmul::multiply_manual_spmd) {
+            print_spmd_stats();
+        }
     }
     return all_ok ? 0 : 1;
 }

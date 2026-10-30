@@ -9,7 +9,7 @@
 //                            can emit aligned vector loads/stores.
 //   * first-touch          — on NUMA machines a page lives on the node of the
 //                            thread that first writes it, so initialising in
-//                            parallel matters (see `fill_parallel`).
+//                            parallel matters (see fill_parallel).
 module;
 
 #include <omp.h>
@@ -74,18 +74,6 @@ public:
     [[nodiscard]] std::mdspan<T, extents_type> view() noexcept { return {data(), rows_, cols_}; }
     [[nodiscard]] std::mdspan<const T, extents_type> view() const noexcept { return {data(), rows_, cols_}; }
 
-    // Parallel fill: every thread writes (and therefore first-touches) its own
-    // contiguous chunk of the storage.
-    void fill_parallel(T value) noexcept
-    {
-        T* const p = data();
-        const std::size_t count = size();
-#pragma omp parallel for simd default(none) firstprivate(p, count, value) aligned(p : matrix_alignment) schedule(static)
-        for (std::size_t idx = 0; idx < count; ++idx) {
-            p[idx] = value;
-        }
-    }
-
     friend bool operator==(const Matrix&, const Matrix&) = default;
 
 private:
@@ -95,6 +83,22 @@ private:
 };
 
 export using Mat = Matrix<double>;
+
+// Parallel fill: every thread writes (and therefore first-touches) its own
+// contiguous chunk of the storage.
+//
+// Deliberately a non-template function: with GCC, OpenMP clauses inside a
+// class template member are not reliably carried through the module BMI when
+// the template is instantiated in another module unit.
+export void fill_parallel(Mat& m, double value) noexcept
+{
+    double* const p = m.data();
+    const std::size_t count = m.size();
+#pragma omp parallel for simd default(none) firstprivate(p, count, value) aligned(p : matrix_alignment) schedule(static)
+    for (std::size_t idx = 0; idx < count; ++idx) {
+        p[idx] = value;
+    }
+}
 
 // Throws if C = A * B is not shape-consistent.
 export void check_shapes(const Mat& a, const Mat& b, const Mat& c)
