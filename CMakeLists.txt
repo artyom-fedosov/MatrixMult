@@ -26,6 +26,7 @@ endif()
 
 option(MATMUL_NATIVE "Optimize for the build machine (-march=native)" ON)
 option(MATMUL_ENABLE_OFFLOAD "Let `target` regions use configured offload devices" OFF)
+option(MATMUL_BUILD_TESTS "Build the test suite" ON)
 
 find_package(OpenMP 4.5 REQUIRED COMPONENTS CXX)
 message(STATUS "OpenMP ${OpenMP_CXX_VERSION} (${OpenMP_CXX_FLAGS})")
@@ -71,3 +72,8 @@ endif()
 add_executable(matmul src/main.cpp)
 target_link_libraries(matmul PRIVATE matmul_core)
 target_compile_options(matmul PRIVATE -Wall -Wextra -Wpedantic)
+
+if(MATMUL_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
